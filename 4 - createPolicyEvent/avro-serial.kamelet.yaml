@@ -1,0 +1,65 @@
+apiVersion: camel.apache.org/v1
+kind: Kamelet
+metadata:
+  annotations:
+    kaoto.io/description: Serialize payload to Avro
+  labels:
+    camel.apache.org/kamelet.type: action
+  name: avro-serial-action
+spec:
+  definition:
+    description: Serialize payload to Avro
+    properties:
+      url:
+        description: The Avro schema to use during serialization (as URL)
+        example: http://my-registry/apis/registry/v2/groups/my-group/artifacts/my-artifact/versions/my-version
+        title: URL
+        type: string
+    required:
+    - url
+    title: Avro Serialize Action
+    type: object
+  dependencies:
+  - "mvn:org.apache.camel.kamelets:camel-kamelets-utils:4.0.0"
+  - camel:kamelet
+  - camel:core
+  - camel:jackson-avro
+  - camel:http
+  - camel:log
+  template:
+    beans:
+    - name: schemaResolver
+      type: '#class:org.apache.camel.kamelets.utils.format.converter.avro.AvroSchemaResolver'
+      properties:
+        validate: "true"
+    from:
+      uri: kamelet:source
+      steps:
+      - set-header:
+          constant: GET
+          name: CamelHttpMethod
+      - set-header:
+          simple: "${bodyAs(String)}"
+          name: UpstreamPayload
+      - to: "{{url}}"
+      - set-body:
+          simple: "${bodyAs(String)}"
+      - set-property:
+          simple: "${bodyAs(String)}"
+          name: schema
+      - set-body:
+          simple: "${header.UpstreamPayload}"
+      - unmarshal:
+          json:
+            library: Jackson
+            unmarshalType: com.fasterxml.jackson.databind.JsonNode
+      - marshal:
+          avro:
+            library: Jackson
+            unmarshalType: com.fasterxml.jackson.databind.JsonNode
+            schemaResolver: "#bean:{{schemaResolver}}"
+      - set-header:
+          constant: application/avro
+          name: Content-Type
+      - to:
+          uri: log:info

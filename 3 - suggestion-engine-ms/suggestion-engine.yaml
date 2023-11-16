@@ -1,0 +1,18 @@
+# camel-k: dependency=github:squakez/legacy-demo
+# camel-k: trait=service.type=NodePort
+
+- rest:
+    post:
+      - to: "direct:post"
+        path: "/suggestions/best"
+
+- from:
+    uri: "direct:post"
+    steps:
+      - unmarshal:
+          json:
+            library: Jackson
+      - set-body:
+          simple: "${body[id]}"
+      # Connect to a legacy system to get infos
+      - to: bean:acme.App

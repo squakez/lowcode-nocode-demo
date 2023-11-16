@@ -1,0 +1,16 @@
+# camel-k: dependency=mvn:io.projectreactor.netty:reactor-netty:1.1.13
+# camel-k: trait=service.type=NodePort
+
+- rest:
+    get:
+      - to: "direct:getall"
+        path: "/policies/"
+
+- from:
+    uri: "direct:getall"
+    steps:
+      - to: azure-cosmosdb://PolicyDB/SampleContainer?accountKey=<redacted>&databaseEndpoint=<redacted>/&operation=queryItems&query=SELECT%20*%20FROM%20c
+      - to: log:info
+      - marshal:
+          json:
+            library: Jackson

@@ -1,0 +1,44 @@
+# camel-k: dependency=mvn:io.quarkus:quarkus-jdbc-postgresql
+# camel-k: build-property=quarkus.datasource.camel.db-kind=postgresql
+# camel-k: config=secret:my-datasource
+# camel-k: trait=service.type=NodePort
+
+- rest:
+    get:
+      - to: "direct:get"
+        path: "/customers/{name}"
+    get:
+      - to: "direct:getall"
+        path: "/customers/"
+    post:
+      - to: "direct:post"
+        path: "/customers/"
+
+- from:
+    uri: "direct:getall"
+    steps:
+      - set-body:
+          simple: "select * from customers"
+      - to: jdbc:camel
+      - set-body:
+          simple: "${bodyAs(String)}"
+
+- from:
+    uri: "direct:get"
+    steps:
+      - set-body:
+          simple: "select * from customers where name='${header.name}'"
+      - to: jdbc:camel
+      - set-body:
+          simple: "${bodyAs(String)}"
+
+- from:
+    uri: "direct:post"
+    steps:
+      - unmarshal:
+          json:
+            library: Jackson
+      - to: log:info
+      - set-body:
+          simple: "insert into customers (name, city) values ('${body[name]}', '${body[city]}')"
+      - to: jdbc:camel

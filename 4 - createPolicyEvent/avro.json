@@ -1,0 +1,10 @@
+{
+    "type" : "record",
+    "namespace" : "Hdfc",
+    "name" : "policyCreateEvent",
+    "fields" : [
+       { "name" : "name" , "type" : "string" },
+       { "name" : "city" , "type" : "string" },
+       { "name" : "policyid" , "type" : "string" }
+    ]
+ }
