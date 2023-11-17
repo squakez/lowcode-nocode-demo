@@ -2,6 +2,12 @@
 
 A Connector-style application used to sink data to an AWS Kinesis stream. It exposes a webtoken used by UI to pass information about a CreatePolicy event. The event is transformed to Avro data format according to a schema provided in APICurio Registry.
 
+## Install an Apicurio mem registry
+
+```
+oc apply -f apicurio.yaml
+```
+
 ## Store the schema in Apicurio registry
 
 Connect to http://192.168.49.2:32060/ui/artifacts and store the schema in `avro.json` file.

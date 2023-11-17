@@ -5,7 +5,6 @@ metadata:
     camel.apache.org/operator.id: camel-k
     trait.camel.apache.org/service.type: NodePort
   name: push-policy-event
-  namespace: default
 spec:
   sink:
     properties:
@@ -34,4 +33,4 @@ spec:
         apiVersion: camel.apache.org/v1
         name: avro-serial-action
       properties:
-        url: http://example-apicurioregistry-mem-service:8080/apis/registry/v2/groups/hdfc/artifacts/policyCreateEvent/versions/2
+        url: http://example-apicurioregistry-mem-service:8080/apis/registry/v2/groups/hdfc/artifacts/policyCreateEvent/versions/1
