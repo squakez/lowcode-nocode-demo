@@ -56,8 +56,10 @@ http POST 192.168.49.2:31404/webhook name=Pasquale city=Mumbai policyid=family
 
 ### Run the use case scenario
 
+```
 http POST 192.168.49.2:31404/customers/ name=Pasquale city=Bangalore
 http 192.168.49.2:31404/customers/Pasquale
 http 192.168.49.2:31404/policies/
 http POST 192.168.49.2:31404/suggestions/best id=1
 http POST 192.168.49.2:31404/webhook name=Pasquale city=Bangalore policyid=family
+```
